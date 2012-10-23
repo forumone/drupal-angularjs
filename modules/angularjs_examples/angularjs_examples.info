@@ -1,0 +1,4 @@
+name = AngularJS Examples
+description = Provides examples using AngularJS and Drupal
+core = 7.x
+dependencies[] = angularjs

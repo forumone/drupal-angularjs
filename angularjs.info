@@ -1,0 +1,4 @@
+name = AngularJS Bridge
+description = Provides and interface to Drupal for AngularJS
+core = 7.x
+dependencies[] = restws

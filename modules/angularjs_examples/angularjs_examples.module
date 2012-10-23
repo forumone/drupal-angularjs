@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * Implements hook_menu
+ * 
+ * @return array
+ */
+function angularjs_examples_menu() {
+  $items = array();
+
+  $items['angular/nodes'] = array(
+    'title' => t('Nodes'),
+    'page callback' => 'angularjs_examples_nodes',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Page callback for node example
+ * 
+ * @return string
+ */
+function angularjs_examples_nodes() {
+  drupal_add_library('angularjs', 'angularjs');
+  drupal_add_js(drupal_get_path('module', 'angularjs_examples') . '/js/nodelist.js');
+  
+  return theme('angularjs_examples_nodes', array('types' => node_type_get_names()));
+}
+
+/**
+ * Implements hook_theme
+ * 
+ * @return array
+ */
+function angularjs_examples_theme() {
+  $themes = array();
+
+  $themes['angularjs_examples_nodes'] = array(
+    'template' => 'example-nodes',
+    'parameters' => array('types' => array()),
+  );
+
+  return $themes;
+}

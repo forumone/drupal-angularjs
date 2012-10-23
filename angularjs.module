@@ -1,0 +1,60 @@
+<?php
+
+function angularjs_menu() {
+  $items = array();
+
+  $items['angular/nodes'] = array(
+    'title' => t('Nodes'),
+    'page callback' => 'angularjs_nodes',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+function angularjs_nodes() {
+  drupal_add_library('angularjs', 'angularjs');
+  drupal_add_js(drupal_get_path('module', 'angularjs') . '/js/nodelist.js');
+  
+  return theme('angular_nodes');
+}
+
+function angularjs_theme() {
+  $themes = array();
+
+  $themes['angular_nodes'] = array(
+    'template' => 'angular-nodes',
+    'parameters' => array(),
+  );
+
+  return $themes;
+}
+
+function angularjs_library() {
+  $libraries = array();
+  $library_path = base_path() . 'sites/all/libraries/angular';
+  
+  $libraries['angularjs'] = array(
+    'title' => 'AngularJS',
+    'website' => 'angularjs.org',
+    'version' => '1.0.2',
+    'js' => array(
+      $library_path . '/angular.min.js' => array(),
+      $library_path . '/angular-resource.min.js' => array(),
+      $library_path . '/angular-cookies.min.js' => array(),
+      $library_path . '/angular-sanitize.min.js' => array(),
+      drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array(),
+    ),  
+  );
+  
+  $libraries['angularjs-bootstrap'] = array(
+    'title' => 'AngularJS Bootstrap',
+    'website' => 'angularjs.org',
+    'version' => '1.0.2',
+    'js' => array(
+      $library_path . '/angular-bootstrap.min.js' => array(),
+    ),
+  );
+  
+  return $libraries;
+}
