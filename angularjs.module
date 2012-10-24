@@ -33,3 +33,16 @@ function angularjs_library() {
   
   return $libraries;
 }
+
+/**
+ * Sends AngularJS template to browser
+ * 
+ * @param string $var
+ */
+function angularjs_template_output($var) {
+  drupal_add_http_header('Content-Type', 'text/html');
+  
+  if (isset($var)) {
+    echo $var;
+  }
+}

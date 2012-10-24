@@ -13,8 +13,24 @@ function angularjs_examples_menu() {
     'page callback' => 'angularjs_examples_nodes',
     'access arguments' => array('access content'),
   );
+  
+  $items['angular/nodes/list'] = array(
+    'title' => t('Nodes'),
+    'page callback' => 'angularjs_examples_nodes_list',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
 
   return $items;
+}
+
+/**
+ * Menu callback for node list template
+ * 
+ * @return string
+ */
+function angularjs_examples_nodes_list() {
+  angularjs_template_output(theme('angularjs_examples_nodes_list', array('types' => node_type_get_names())));
 }
 
 /**
@@ -26,7 +42,7 @@ function angularjs_examples_nodes() {
   drupal_add_library('angularjs', 'angularjs');
   drupal_add_js(drupal_get_path('module', 'angularjs_examples') . '/js/nodelist.js');
   
-  return theme('angularjs_examples_nodes', array('types' => node_type_get_names()));
+  return theme('angularjs_examples_nodes');
 }
 
 /**
@@ -38,8 +54,13 @@ function angularjs_examples_theme() {
   $themes = array();
 
   $themes['angularjs_examples_nodes'] = array(
-    'template' => 'example-nodes',
-    'parameters' => array('types' => array()),
+    'template' => 'theme/example-nodes',
+    'parameters' => array(),
+  );
+  
+  $themes['angularjs_examples_nodes_list'] = array(
+    'template' => 'theme/example-nodes-list',
+    'parameters' => array('types' => array())  
   );
 
   return $themes;
