@@ -26,7 +26,7 @@
 			<td><span ng-switch on="node.status"> <span
 					ng-switch-when="1">Active</span> <span ng-switch-when="0">Inactive</span>
 			</span></td>
-			<td>{{node.updated | date:'medium'}}</td>
+			<td>{{node.changed + '000' | date:'medium'}}</td>
 			<td><span ng-switch on="node.promote">
 					<button ng-switch-when="1" ng-click="promote(node, 0)">Unpromote</button>
 					<button ng-switch-when="0" ng-click="promote(node, 1)">Promote</button>

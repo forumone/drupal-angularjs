@@ -1,5 +1,5 @@
 angular.module('node', ['ngResource']).factory('Node', function($resource) {
-	var Node = $resource('/node/:nid.json', {}, {
+	var Node = $resource('/node/:nid', {}, {
 	  update: { method: 'PUT' }
 	});
 	
@@ -8,7 +8,9 @@ angular.module('node', ['ngResource']).factory('Node', function($resource) {
 	}
 	
 	return Node;
-});
+}).config(["$httpProvider", function(provider) {
+  provider.defaults.headers.common['X-CSRF-Token'] = Drupal.settings.restws_csrf_token;
+}]);
 
 angular.module('nodes', ['ngResource']).factory('Nodes', function($resource) {
   var Node = $resource('/node.json', {}, {

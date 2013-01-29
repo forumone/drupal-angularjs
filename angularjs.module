@@ -2,26 +2,31 @@
 
 /**
  * Implements hook_library
- * 
+ *
  * @return array
  */
 function angularjs_library() {
   $libraries = array();
   $library_path = base_path() . 'sites/all/libraries/angular';
+
+  $js = array(
+    $library_path . '/angular.min.js' => array(),
+    $library_path . '/angular-resource.min.js' => array(),
+    $library_path . '/angular-cookies.min.js' => array(),
+    $library_path . '/angular-sanitize.min.js' => array());
+
+  // Add any resources
+  foreach (angularjs_get_resource() as $path => $options) {
+    $js[$path] = $options;
+  }
   
   $libraries['angularjs'] = array(
     'title' => 'AngularJS',
     'website' => 'angularjs.org',
     'version' => '1.0.2',
-    'js' => array(
-      $library_path . '/angular.min.js' => array(),
-      $library_path . '/angular-resource.min.js' => array(),
-      $library_path . '/angular-cookies.min.js' => array(),
-      $library_path . '/angular-sanitize.min.js' => array(),
-      drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array(),
-    ),  
+    'js' => $js,
   );
-  
+
   $libraries['angularjs-bootstrap'] = array(
     'title' => 'AngularJS Bootstrap',
     'website' => 'angularjs.org',
@@ -30,18 +35,55 @@ function angularjs_library() {
       $library_path . '/angular-bootstrap.min.js' => array(),
     ),
   );
+
+  drupal_add_js(array('restws_csrf_token' => drupal_get_token('restws')), 'setting');
   
   return $libraries;
 }
 
 /**
- * Sends AngularJS template to browser
+ * Returns the registered AngularJS resources
  * 
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_resource($reset = FALSE) {
+  $resources = &drupal_static(__FUNCTION__, array());
+
+  if (TRUE === empty($resources)) {
+    $cached_resources = cache_get('angularjs_resources');
+
+    if (FALSE === isset($cached_resources->data) || TRUE == $reset) {
+      $resources = module_invoke_all('angularjs_resources');
+      drupal_alter('angularjs_resources', $resources);
+      
+      cache_set('angularjs_resources', $resources);
+    }
+    else {
+      $resources = $cached_resources->data;
+    }
+  }
+  
+  return $resources;
+}
+
+/**
+ * Implements hook_angularjs_resources
+ * 
+ * @return array
+ */
+function angularjs_angularjs_resources() {
+  return array(drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array());
+}
+
+/**
+ * Sends AngularJS template to browser
+ *
  * @param string $var
  */
 function angularjs_template_output($var) {
   drupal_add_http_header('Content-Type', 'text/html');
-  
+
   if (isset($var)) {
     echo $var;
   }
