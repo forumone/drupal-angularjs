@@ -2,8 +2,6 @@ angular.module('nodelist', ['node', 'nodes']).
   config(function($routeProvider) {
     $routeProvider.
       when('/', {controller:ListCtrl, templateUrl:'/angular/nodes/list'}).
-      //when('/edit/:nid', {controller:EditCtrl, templateUrl:'detail.html'}).
-      //when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
       otherwise({redirectTo:'/'});
   });
  

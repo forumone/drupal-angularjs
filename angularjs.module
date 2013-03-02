@@ -15,9 +15,11 @@ function angularjs_library() {
     $library_path . '/angular-cookies.min.js' => array(),
     $library_path . '/angular-sanitize.min.js' => array());
 
-  // Add any resources
-  foreach (angularjs_get_resource() as $path => $options) {
-    $js[$path] = $options;
+  // Load module types exposed by modules
+  foreach (array('resources', 'filters', 'directives', 'servies') as $type) {
+    foreach (angularjs_get_modules($type) as $path => $options) {
+      $js[$path] = $options;
+    }
   }
   
   $libraries['angularjs'] = array(
@@ -42,22 +44,25 @@ function angularjs_library() {
 }
 
 /**
- * Returns the registered AngularJS resources
+ * Returns the registered AngularJS modules
  * 
+ * @param string $type
  * @param boolean $reset
  * @return array
  */
-function angularjs_get_resource($reset = FALSE) {
-  $resources = &drupal_static(__FUNCTION__, array());
-
+function angularjs_get_modules($type, $reset = FALSE) {
+  $name = 'angularjs_' . $type;
+  
+  $modules = &drupal_static($name, array());
+  
   if (TRUE === empty($resources)) {
-    $cached_resources = cache_get('angularjs_resources');
+    $cached_resources = cache_get($name);
 
     if (FALSE === isset($cached_resources->data) || TRUE == $reset) {
-      $resources = module_invoke_all('angularjs_resources');
-      drupal_alter('angularjs_resources', $resources);
+      $resources = module_invoke_all($name);
+      drupal_alter($name, $resources);
       
-      cache_set('angularjs_resources', $resources);
+      cache_set($name, $resources);
     }
     else {
       $resources = $cached_resources->data;
@@ -65,6 +70,46 @@ function angularjs_get_resource($reset = FALSE) {
   }
   
   return $resources;
+}
+
+/**
+ * Returns a list of AngularJS resources exposed by modules
+ * 
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_resources($reset = FALSE) {
+  return angularjs_get_modules('resources', $reset);
+}
+
+/**
+ * Returns a list of AngularJS filters exposed by modules
+ *
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_filters($reset = FALSE) {
+  return angularjs_get_modules('filters', $reset);
+}
+
+/**
+ * Returns a list of AngularJS directives exposed by modules
+ *
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_directives($reset = FALSE) {
+  return angularjs_get_modules('directives', $reset);
+}
+
+/**
+ * Returns a list of AngularJS services exposed by modules
+ *
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_services($reset = FALSE) {
+  return angularjs_get_modules('services', $reset);
 }
 
 /**
@@ -86,5 +131,55 @@ function angularjs_template_output($var) {
 
   if (isset($var)) {
     echo $var;
+  }
+}
+
+/**
+ * Adds an Angular JS template partial to be sent to the page. Takes either a text
+ * template or a render array
+ * 
+ * @param string $name
+ * @param mixed $output
+ * @return array
+ */
+function angularjs_add_partial($name = NULL, $output = NULL) {
+  $partials = &drupal_static(__FUNCTION__, array());
+  
+  if (NULL != $name) {
+    $partials[$name] = $output;
+  }
+  
+  return $partials;
+}
+
+/**
+ * Implements hook_page_alter
+ * 
+ * Adds partials to the page footer
+ * 
+ * @param array $variables
+ */
+function angularjs_page_alter(&$variables) {
+  $partials = angularjs_add_partial();
+  
+  drupal_alter('angularjs_partials', $partials);
+  
+  foreach ($partials as $name => $output) {
+    
+    // If we have a render array render it
+    if (TRUE === is_array($output)) {
+      $output = render($output);
+    }
+    
+    $element = array(
+      '#tag' => 'script',
+      '#value' => $output,
+      '#attributes' => array(
+        'type' => 'text/ng-template',
+        'id' => $name,  
+      )  
+    );
+    
+    $variables['footer']['partial_' . $name] = array('#markup' => theme('html_tag', array('element' => $element)));
   }
 }
