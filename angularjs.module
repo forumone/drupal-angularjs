@@ -1,13 +1,47 @@
 <?php
 
 /**
- * Implements hook_library
- *
- * @return array
+ * Implements hook_page_delivery_callback_alter().
+ */
+function angularjs_page_delivery_callback_alter(&$callback) {
+  // pjax requests can be detected by the X-PJAX http header.
+  // When serving pjax requests, deliver just the main page content.
+  if (!empty($_SERVER['HTTP_X_ANGULARJS']) && $callback == 'drupal_deliver_html_page') {
+    $callback = 'angularjs_deliver_page_content';
+  }
+}
+
+/**
+ * Delivers only the main content of the requested page, for pjax requests.
+ */
+function angularjs_deliver_page_content($page_callback_result) {
+  if (is_int($page_callback_result)) {
+    // Pass over to drupal_deliver_html_page() to deal with errors.
+    drupal_deliver_html_page($page_callback_result);
+  }
+  else {
+    if (is_null(drupal_get_http_header('Content-Type'))) {
+      drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
+    }
+
+    // $page_callback_result contains the main contents of the page.
+    // Add a page title, which will be picked up and used by pjax.
+    $output = '<title>' . drupal_get_title() . '</title>' . render($page_callback_result);
+    $output .= drupal_get_js();
+    print($output);
+
+    // Make sure the requests are cached. pajax requests will be cached separately
+    // from standard page requests thanks to the "_pjax" query string.
+    drupal_page_footer();
+  }
+}
+
+/**
+ * Implements hook_library().
  */
 function angularjs_library() {
   $libraries = array();
-  $library_path = base_path() . 'sites/all/libraries/angular';
+  $library_path = libraries_get_path('angular');
 
   $js = array(
     $library_path . '/angular.min.js' => array(),
@@ -16,12 +50,12 @@ function angularjs_library() {
     $library_path . '/angular-sanitize.min.js' => array());
 
   // Load module types exposed by modules
-  foreach (array('resources', 'filters', 'directives', 'servies') as $type) {
+  foreach (array('resources', 'filters', 'directives', 'services') as $type) {
     foreach (angularjs_get_modules($type) as $path => $options) {
       $js[$path] = $options;
     }
   }
-  
+
   $libraries['angularjs'] = array(
     'title' => 'AngularJS',
     'website' => 'angularjs.org',
@@ -38,43 +72,219 @@ function angularjs_library() {
     ),
   );
 
-  drupal_add_js(array('restws_csrf_token' => drupal_get_token('restws')), 'setting');
-  
+  // Add CSRF token required by restWS.
+  $js_settings = array(
+    'angularjsApp' => array(
+      'restws_csrf_token' => drupal_get_token('restws'),
+      'basePath' => url('', array('absolute' => TRUE)),
+    ),
+  );
+
+  drupal_add_js($js_settings, 'setting');
+
   return $libraries;
 }
 
 /**
+ * Implements hook_element_info().
+ */
+function angularjs_element_info() {
+  $types['ng_select'] = array(
+    '#input' => TRUE,
+    '#multiple' => FALSE,
+    '#theme' => 'ng_select',
+    '#theme_wrappers' => array('form_element'),
+    '#process' => array('form_process_select', 'ajax_process_form', 'angularjs_process_select'),
+    '#ng_model' => '',
+    // @todo: Add option to look at parents(s) for the controller definition.
+    '#ng_controller' => '',
+    '#attached' => array(
+      'library' => array(
+        // @todo: Check why this doesn't work.
+        // array('angularjs', 'angularjs'),
+      ),
+    ),
+  );
+
+  return $types;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function angularjs_theme() {
+  return array(
+    'ng_select' => array(
+      'render element' => 'element',
+    ),
+    'ng_table' => array(
+      'variables' => array(
+        'header' => NULL,
+        'attributes' => array(),
+        'caption' => NULL,
+        'sticky' => TRUE,
+        'empty' => '',
+        // Angular settings.
+        'row' => array(),
+        'ng_model' => '',
+        'ng_controller' => '',
+        'ng_repeat' => '',
+        'ng_empty' => '',
+      ),
+    ),
+  );
+}
+
+/**
+ * Process ng-select element.
+ */
+function angularjs_process_select($element, $form_state) {
+  // Pass the option to JS.
+  $options = array();
+  foreach ($element['#options'] as $value => $name) {
+    $options[] = array('value' => $value, 'name' => $name);
+
+  }
+  $data['angularjs'][$element['#ng_controller']][$element['#ng_model']] = array(
+    'options' => $options,
+    'required' => $element['#required'],
+    'selected' => $element['#default_value'],
+    '_type' => 'select',
+    '_name' => $element['#name'],
+  );
+
+  $element['#attached']['js'][] = array(
+    'type' => 'setting',
+    'data' => $data,
+  );
+
+  return $element;
+}
+
+/**
+ * Returns HTML for a ng-select form element.
+ *
+ * @ingroup themeable
+ */
+function theme_ng_select($variables) {
+  $element = $variables['element'];
+  element_set_attributes($element, array('id', 'name', 'size'));
+  _form_set_class($element, array('form-select'));
+
+  return '<select' . drupal_attributes($element['#attributes']) . ' ng-model="' . $element['#ng_model'] . '.selected" ng-options="option.value as option.name for option in '. $element['#ng_model'] . '.options"></select> ';
+}
+
+/**
+ * Returns HTML for a table, using AngularJs.
+ */
+function theme_ng_table($variables) {
+  $header = $variables['header'];
+  $row = $variables['row'];
+  $attributes = $variables['attributes'];
+  $caption = $variables['caption'];
+  $sticky = $variables['sticky'];
+  $empty = $variables['empty'];
+
+  $ng_controller = $variables['ng_controller'];
+  $ng_model = $variables['ng_model'];
+  $ng_repeat = !empty($variables['ng_repeat']) ? $variables['ng_repeat'] : "item in $ng_model";
+  $ng_empty = !empty($variables['ng_empty']) ? $variables['ng_empty'] : "!$ng_model.length";
+
+  // Add sticky headers, if applicable.
+  if (count($header) && $sticky) {
+    drupal_add_js('misc/tableheader.js');
+    // Add 'sticky-enabled' class to the table to identify it for JS.
+    // This is needed to target tables constructed by this function.
+    $attributes['class'][] = 'sticky-enabled';
+  }
+
+  $output = '<table' . drupal_attributes($attributes) . ">\n";
+
+  if (isset($caption)) {
+    $output .= '<caption>' . $caption . "</caption>\n";
+  }
+
+  // Add the 'empty' row message if available.
+  if (empty($row) && $empty) {
+    $header_count = 0;
+    foreach ($header as $header_cell) {
+      if (is_array($header_cell)) {
+        $header_count += 1;
+      }
+      else {
+        $header_count++;
+      }
+    }
+    // @todo: Fix.
+    $rows[] = array(array('data' => $empty, 'class' => array('empty', 'message')));
+  }
+
+  // Format the table header:
+  if (count($header)) {
+    // HTML requires that the thead tag has tr tags in it followed by tbody
+    // tags. Using ternary operator to check and see if we have any rows.
+    $output .= (count($row) ? ' <thead><tr>' : ' <tr>');
+    foreach ($header as $cell) {
+      $output .= '<th>' . $cell . '</th>';
+    }
+    // Using ternary operator to close the tags based on whether or not there are rows
+    $output .= (count($row) ? " </tr></thead>\n" : "</tr>\n");
+  }
+
+  // Format the table rows:
+  if (!empty($row)) {
+    $output .= "<tbody>\n";
+
+    // Build row
+    $output .= ' <tr ng-repeat="' . $ng_repeat . '">';
+    foreach ($row as $cell) {
+      $output .= '<td>' . $cell . '</td>';
+    }
+    $output .= " </tr>\n";
+
+    // Add empty-text <tr>.
+    $output .= '<tr ng-show="'. $ng_empty . '"><td>' . $empty . '</td></tr>';
+    $output .= "</tbody>\n";
+  }
+
+  $output .= "</table>\n";
+
+  return $output;
+}
+
+
+/**
  * Returns the registered AngularJS modules
- * 
+ *
  * @param string $type
  * @param boolean $reset
  * @return array
  */
 function angularjs_get_modules($type, $reset = FALSE) {
   $name = 'angularjs_' . $type;
-  
+
   $modules = &drupal_static($name, array());
-  
+
   if (TRUE === empty($resources)) {
     $cached_resources = cache_get($name);
 
     if (FALSE === isset($cached_resources->data) || TRUE == $reset) {
       $resources = module_invoke_all($name);
       drupal_alter($name, $resources);
-      
+
       cache_set($name, $resources);
     }
     else {
       $resources = $cached_resources->data;
     }
   }
-  
+
   return $resources;
 }
 
 /**
  * Returns a list of AngularJS resources exposed by modules
- * 
+ *
  * @param boolean $reset
  * @return array
  */
@@ -114,7 +324,7 @@ function angularjs_get_services($reset = FALSE) {
 
 /**
  * Implements hook_angularjs_resources
- * 
+ *
  * @return array
  */
 function angularjs_angularjs_resources() {
@@ -129,6 +339,9 @@ function angularjs_angularjs_resources() {
 function angularjs_template_output($var) {
   drupal_add_http_header('Content-Type', 'text/html');
 
+  // Add new JS.
+  echo drupal_get_js();
+
   if (isset($var)) {
     echo $var;
   }
@@ -137,49 +350,49 @@ function angularjs_template_output($var) {
 /**
  * Adds an Angular JS template partial to be sent to the page. Takes either a text
  * template or a render array
- * 
+ *
  * @param string $name
  * @param mixed $output
  * @return array
  */
 function angularjs_add_partial($name = NULL, $output = NULL) {
   $partials = &drupal_static(__FUNCTION__, array());
-  
+
   if (NULL != $name) {
     $partials[$name] = $output;
   }
-  
+
   return $partials;
 }
 
 /**
  * Implements hook_page_alter
- * 
+ *
  * Adds partials to the page footer
- * 
+ *
  * @param array $variables
  */
 function angularjs_page_alter(&$variables) {
   $partials = angularjs_add_partial();
-  
+
   drupal_alter('angularjs_partials', $partials);
-  
+
   foreach ($partials as $name => $output) {
-    
+
     // If we have a render array render it
     if (TRUE === is_array($output)) {
       $output = render($output);
     }
-    
+
     $element = array(
       '#tag' => 'script',
       '#value' => $output,
       '#attributes' => array(
         'type' => 'text/ng-template',
-        'id' => $name,  
-      )  
+        'id' => $name,
+      )
     );
-    
+
     $variables['footer']['partial_' . $name] = array('#markup' => theme('html_tag', array('element' => $element)));
   }
 }

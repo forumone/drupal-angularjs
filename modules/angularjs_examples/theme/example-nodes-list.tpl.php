@@ -1,10 +1,4 @@
-<select name="node_type" ng-model="nodetype">
-	<?php foreach ($types as $type => $name) :?>
-	<option value="<?php print $type; ?>">
-		<?php print $name; ?>
-	</option>
-	<?php endforeach; ?>
-</select>
+<?php print render($query); ?>
 
 <table
 	class="sticky-enabled table-select-processed tableheader-processed sticky-table">
@@ -19,7 +13,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="node in nodes.list">
+		<tr ng-repeat="node in nodes.list | filter:query">
 			<td>{{node.title}}</td>
 			<td>{{node.type}}</td>
 			<td>{{node.author.id}}</td>
