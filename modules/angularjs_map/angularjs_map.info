@@ -9,6 +9,7 @@ dependencies[] = facetapi
 dependencies[] = features
 dependencies[] = feeds
 dependencies[] = geofield
+dependencies[] = jquery_update
 dependencies[] = number
 dependencies[] = restws_search_api
 dependencies[] = search_api
