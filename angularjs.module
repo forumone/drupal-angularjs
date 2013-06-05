@@ -355,21 +355,21 @@ function angularjs_get_modules($type, $reset = FALSE) {
 
   $modules = &drupal_static($name, array());
 
-  if (TRUE === empty($resources)) {
-    $cached_resources = cache_get($name);
+  if (TRUE === empty($modules)) {
+    $cached_modules = cache_get($name);
 
-    if (FALSE === isset($cached_resources->data) || TRUE == $reset) {
-      $resources = module_invoke_all($name);
-      drupal_alter($name, $resources);
+    if (FALSE === isset($cached_modules->data) || TRUE == $reset) {
+      $modules = module_invoke_all($name);
+      drupal_alter($name, $modules);
 
-      cache_set($name, $resources);
+      cache_set($name, $modules);
     }
     else {
-      $resources = $cached_resources->data;
+      $modules = $cached_modules->data;
     }
   }
 
-  return $resources;
+  return $modules;
 }
 
 /**
