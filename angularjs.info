@@ -3,5 +3,4 @@ description = Provides and interface to Drupal for AngularJS
 core = 7.x
 
 dependencies[] = libraries
-dependencies[] = restws
 
