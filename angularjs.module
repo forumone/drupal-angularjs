@@ -50,7 +50,7 @@ function angularjs_library() {
     $library_path . '/angular-sanitize.min.js' => array());
 
   // Load module types exposed by modules
-  foreach (array('resources', 'filters', 'directives', 'services') as $type) {
+  foreach (array('controllers', 'resources', 'filters', 'directives', 'services') as $type) {
     foreach (angularjs_get_modules($type) as $path => $options) {
       $js[$path] = $options;
     }
@@ -165,6 +165,7 @@ function angularjs_preprocess_html(&$vars) {
   
   if (FALSE === empty($app_name)) {
     $vars['attributes_array']['ng-app'] = $app_name;
+    $vars['html_attributes_array']['ng-app'] = $app_name;
   }
   
   if (FALSE === empty($base_href)) {
@@ -228,9 +229,11 @@ function angularjs_theme() {
 function angularjs_process_select($element, $form_state) {
   // Pass the option to JS.
   $options = array();
-  foreach ($element['#options'] as $value => $name) {
-    $options[] = array('value' => $value, 'name' => $name);
-
+  
+  if (TRUE === isset($element['#options'])) {
+    foreach ($element['#options'] as $value => $name) {
+      $options[] = array('value' => $value, 'name' => $name);
+    }
   }
   
   if (TRUE === isset($element['#ng_controller'])) {
@@ -410,6 +413,16 @@ function angularjs_get_directives($reset = FALSE) {
  */
 function angularjs_get_services($reset = FALSE) {
   return angularjs_get_modules('services', $reset);
+}
+
+/**
+ * Returns a list of AngularJS controllers exposed by modules
+ *
+ * @param boolean $reset
+ * @return array
+ */
+function angularjs_get_controllers($reset = FALSE) {
+  return angularjs_get_modules('controllers', $reset);
 }
 
 /**
