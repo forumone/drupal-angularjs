@@ -161,7 +161,7 @@ function angularjs_library() {
     'directives',
     'services' 
   ) as $type) {
-    foreach(angularjs_get_modules($type, false) as $path => $options) {
+    foreach(angularjs_get_modules($type, FALSE, $version) as $path => $options) {
       $js[$path] = $options;
     }
   }
