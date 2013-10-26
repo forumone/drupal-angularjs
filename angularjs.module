@@ -1,5 +1,8 @@
 <?php
 
+define('ANGULARJS_DEFAULT_VERSION', '1.0.8');
+define('ANGULARJS_CDN_URL', 'https://ajax.googleapis.com/ajax/libs/angularjs');
+
 /**
  * Implements hook_page_delivery_callback_alter().
  */
@@ -37,18 +40,106 @@ function angularjs_deliver_page_content($page_callback_result) {
 }
 
 /**
+ * Implements hook_help().
+ */
+function angularjs_help($path, $arg) {
+  switch ($path) {
+  	case 'admin/config/development/angularjs':
+  	  return '<p>' . t('Configure what files <a href="@angularjs">AngularJS</a> are loaded onto the site. Select which AngularJS version, the compression level and whether or not to use a CDN.', array(
+  	  '@jquery' => 'http://angularjs.com',
+  	  )) . '</p>';
+  }
+}
+
+/**
+ * Implements hook_menu
+ */
+function angularjs_menu() {
+	$items = array();
+
+	$items['admin/config/development/angularjs'] = array(
+		'title' => t('AngularJS'),
+	  'page callback' => 'drupal_get_form',
+	  'page arguments' => array('angularjs_settings_form'),
+	  'file' => 'angularjs.admin.inc',
+	  'access arguments' => array('administer angularjs'),
+	  'description' => 'Configure settings related to the AngularJS library',
+	);
+	
+	return $items;
+}
+
+function angularjs_version_files($version = NULL) {
+	$files = array();
+	
+	$files['1.0.8'] = array(
+		'angular-bootstrap-prettify',
+	  'angular-bootstrap',
+	  'angular-cookies',
+	  'angular-loader',
+	  'angular-mocks',
+	  'angular-resource',
+	  'angular-sanitize',
+	);
+	
+	$files['1.1.5'] = array(
+	  'angular-cookies',
+	  'angular-loader',
+	  'angular-mobile',
+	  'angular-mocks',
+	  'angular-resource',
+	  'angular-sanitize',
+	);
+	
+	$files['1.2.0-rc.3'] = array(
+	  'angular-animate',
+	  'angular-cookies',
+	  'angular-loader',
+	  'angular-mocks',
+	  'angular-resource',
+	  'angular-route',
+	  'angular-sanitize',
+	  'angular-touch',
+	);
+	
+	return (NULL != $version) ? $files[$version] : $files;
+}
+
+/**
+ * Implements hook_permission
+ */
+function angularjs_permission() {
+  return array(
+	 'administer angularjs' => array(
+  	'title' => t('Administer AngularJS'),
+	   'description' => t('Perform administration for AngularJS'),
+  ));
+}
+
+/**
  * Implements hook_library().
  */
 function angularjs_library() {
   $libraries = array();
   $library_path = libraries_get_path('angular');
+  $version = variable_get('angularjs_version', ANGULARJS_DEFAULT_VERSION);
+
+  $files = variable_get('angularjs_files', array());
+  $compression = variable_get('angularjs_compression_type', 'min');
+  $cdn = (TRUE == variable_get('angularjs_cdn', '0'));
+  
+  // Get correct extension
+  $extension = (FALSE === empty($compression)) ? $compression . '.js' : 'js';
+  $path = (FALSE == $cdn) ? $library_path : ANGULARJS_CDN_URL . '/' . $version;
 
   $js = array(
-    $library_path . '/angular.min.js' => array(),
-    $library_path . '/angular-resource.min.js' => array(),
-    $library_path . '/angular-cookies.min.js' => array(),
-    $library_path . '/angular-sanitize.min.js' => array());
+    $path . '/angular.' . $extension => array('external' => $cdn));
 
+  // Add selected files
+  foreach($files as $file) {
+  	$js[$path . '/' . $file . '.' . $extension] = array('external' => $cdn);
+  }
+  
   // Load module types exposed by modules
   foreach (array('controllers', 'resources', 'filters', 'directives', 'services') as $type) {
     foreach (angularjs_get_modules($type) as $path => $options) {
@@ -59,17 +150,8 @@ function angularjs_library() {
   $libraries['angularjs'] = array(
     'title' => 'AngularJS',
     'website' => 'angularjs.org',
-    'version' => '1.0.6',
+    'version' => $version,
     'js' => $js,
-  );
-
-  $libraries['angularjs-bootstrap'] = array(
-    'title' => 'AngularJS Bootstrap',
-    'website' => 'angularjs.org',
-    'version' => '1.0.2',
-    'js' => array(
-      $library_path . '/angular-bootstrap.min.js' => array(),
-    ),
   );
 
   // Add CSRF token required by restWS.
