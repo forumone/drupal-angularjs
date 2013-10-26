@@ -28,8 +28,8 @@
  *         provided to drupal_add_js
  */
 function hook_angularjs_controllers() {
-  return array (
-    drupal_get_path('angularjs') . '/js/controllers.js' => array () 
+  return array(
+    drupal_get_path('angularjs') . '/js/controllers.js' => array() 
   );
 }
 
@@ -43,8 +43,8 @@ function hook_angularjs_controllers() {
  *         provided to drupal_add_js
  */
 function hook_angularjs_filters() {
-  return array (
-    drupal_get_path('angularjs') . '/js/filters.js' => array () 
+  return array(
+    drupal_get_path('angularjs') . '/js/filters.js' => array() 
   );
 }
 
@@ -58,8 +58,8 @@ function hook_angularjs_filters() {
  *         provided to drupal_add_js
  */
 function hook_angularjs_directives() {
-  return array (
-    drupal_get_path('angularjs') . '/js/directives.js' => array () 
+  return array(
+    drupal_get_path('angularjs') . '/js/directives.js' => array() 
   );
 }
 
@@ -73,8 +73,8 @@ function hook_angularjs_directives() {
  *         provided to drupal_add_js
  */
 function hook_angularjs_services() {
-  return array (
-    drupal_get_path('angularjs') . '/js/services.js' => array () 
+  return array(
+    drupal_get_path('angularjs') . '/js/services.js' => array() 
   );
 }
 
@@ -88,8 +88,8 @@ function hook_angularjs_services() {
  *          The version of AngularJS
  */
 function hook_angularjs_controllers_alter(&$controllers, $version) {
-  foreach ($controllers as $key => &$value) {
-  	$value['scope'] = 'footer';
+  foreach($controllers as $key => &$value) {
+    $value['scope'] = 'footer';
   }
 }
 
@@ -98,12 +98,12 @@ function hook_angularjs_controllers_alter(&$controllers, $version) {
  *
  * @param array $filters
  *          The list of filters exposed by any module
- *
+ *          
  * @param string $version
  *          The version of AngularJS
  */
 function hook_angularjs_filters_alter(&$filters, $version) {
-  foreach ($filters as $key => &$value) {
+  foreach($filters as $key => &$value) {
     $value['scope'] = 'footer';
   }
 }
@@ -113,12 +113,12 @@ function hook_angularjs_filters_alter(&$filters, $version) {
  *
  * @param array $directives
  *          The list of directives exposed by any module
- *
+ *          
  * @param string $version
  *          The version of AngularJS
  */
 function hook_angularjs_directives_alter(&$directives, $version) {
-  foreach ($directives as $key => &$value) {
+  foreach($directives as $key => &$value) {
     $value['scope'] = 'footer';
   }
 }
@@ -128,12 +128,12 @@ function hook_angularjs_directives_alter(&$directives, $version) {
  *
  * @param array $services
  *          The list of services exposed by any module
- *
+ *          
  * @param string $version
  *          The version of AngularJS
  */
 function hook_angularjs_services_alter(&$services, $version) {
-  foreach ($services as $key => &$value) {
+  foreach($services as $key => &$value) {
     $value['scope'] = 'footer';
   }
 }

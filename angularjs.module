@@ -8,7 +8,7 @@ define('ANGULARJS_CDN_URL', 'https://ajax.googleapis.com/ajax/libs/angularjs');
 function angularjs_page_delivery_callback_alter(&$callback) {
   // pjax requests can be detected by the X-PJAX http header.
   // When serving pjax requests, deliver just the main page content.
-  if (! empty($_SERVER ['HTTP_X_ANGULARJS']) && $callback == 'drupal_deliver_html_page') {
+  if (! empty($_SERVER['HTTP_X_ANGULARJS']) && $callback == 'drupal_deliver_html_page') {
     $callback = 'angularjs_deliver_page_content';
   }
 }
@@ -43,7 +43,7 @@ function angularjs_deliver_page_content($page_callback_result) {
 function angularjs_help($path, $arg) {
   switch ($path) {
     case 'admin/config/development/angularjs' :
-      return '<p>' . t('Configure what files <a href="@angularjs">AngularJS</a> are loaded onto the site. Select which AngularJS version, the compression level and whether or not to use a CDN.', array (
+      return '<p>' . t('Configure what files <a href="@angularjs">AngularJS</a> are loaded onto the site. Select which AngularJS version, the compression level and whether or not to use a CDN.', array(
         '@jquery' => 'http://angularjs.com' 
       )) . '</p>';
   }
@@ -53,16 +53,16 @@ function angularjs_help($path, $arg) {
  * Implements hook_menu
  */
 function angularjs_menu() {
-  $items = array ();
+  $items = array();
   
-  $items ['admin/config/development/angularjs'] = array (
+  $items['admin/config/development/angularjs'] = array(
     'title' => t('AngularJS'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array (
+    'page arguments' => array(
       'angularjs_settings_form' 
     ),
     'file' => 'angularjs.admin.inc',
-    'access arguments' => array (
+    'access arguments' => array(
       'administer angularjs' 
     ),
     'description' => 'Configure settings related to the AngularJS library' 
@@ -78,9 +78,9 @@ function angularjs_menu() {
  * @return array
  */
 function angularjs_version_files($version = NULL) {
-  $files = array ();
+  $files = array();
   
-  $files ['1.0.8'] = array (
+  $files['1.0.8'] = array(
     'angular-bootstrap-prettify',
     'angular-bootstrap',
     'angular-cookies',
@@ -90,7 +90,7 @@ function angularjs_version_files($version = NULL) {
     'angular-sanitize' 
   );
   
-  $files ['1.1.5'] = array (
+  $files['1.1.5'] = array(
     'angular-cookies',
     'angular-loader',
     'angular-mobile',
@@ -99,7 +99,7 @@ function angularjs_version_files($version = NULL) {
     'angular-sanitize' 
   );
   
-  $files ['1.2.0-rc.3'] = array (
+  $files['1.2.0-rc.3'] = array(
     'angular-animate',
     'angular-cookies',
     'angular-loader',
@@ -110,15 +110,15 @@ function angularjs_version_files($version = NULL) {
     'angular-touch' 
   );
   
-  return (NULL != $version) ? $files [$version] : $files;
+  return (NULL != $version) ? $files[$version] : $files;
 }
 
 /**
  * Implements hook_permission
  */
 function angularjs_permission() {
-  return array (
-    'administer angularjs' => array (
+  return array(
+    'administer angularjs' => array(
       'title' => t('Administer AngularJS'),
       'description' => t('Perform administration for AngularJS') 
     ) 
@@ -129,11 +129,11 @@ function angularjs_permission() {
  * Implements hook_library().
  */
 function angularjs_library() {
-  $libraries = array ();
+  $libraries = array();
   $library_path = libraries_get_path('angular');
   $version = variable_get('angularjs_version', ANGULARJS_DEFAULT_VERSION);
   
-  $files = variable_get('angularjs_files', array ());
+  $files = variable_get('angularjs_files', array());
   $compression = variable_get('angularjs_compression_type', 'min');
   $cdn = (TRUE == variable_get('angularjs_cdn', '0'));
   
@@ -141,32 +141,32 @@ function angularjs_library() {
   $extension = (FALSE === empty($compression)) ? $compression . '.js' : 'js';
   $path = (FALSE == $cdn) ? $library_path : ANGULARJS_CDN_URL . '/' . $version;
   
-  $js = array (
-    $path . '/angular.' . $extension => array (
+  $js = array(
+    $path . '/angular.' . $extension => array(
       'external' => $cdn 
     ) 
   );
   
   // Add selected files
-  foreach ( $files as $file ) {
-    $js [$path . '/' . $file . '.' . $extension] = array (
+  foreach($files as $file) {
+    $js[$path . '/' . $file . '.' . $extension] = array(
       'external' => $cdn 
     );
   }
   
   // Load module types exposed by modules
-  foreach ( array (
+  foreach(array(
     'controllers',
     'filters',
     'directives',
     'services' 
-  ) as $type ) {
-    foreach ( angularjs_get_modules($type, false) as $path => $options ) {
-      $js [$path] = $options;
+  ) as $type) {
+    foreach(angularjs_get_modules($type, false) as $path => $options) {
+      $js[$path] = $options;
     }
   }
   
-  $libraries ['angularjs'] = array (
+  $libraries['angularjs'] = array(
     'title' => 'AngularJS',
     'website' => 'angularjs.org',
     'version' => $version,
@@ -174,10 +174,10 @@ function angularjs_library() {
   );
   
   // Add CSRF token required by restWS.
-  $js_settings = array (
-    'angularjsApp' => array (
+  $js_settings = array(
+    'angularjsApp' => array(
       'restws_csrf_token' => drupal_get_token('restws'),
-      'basePath' => url('', array (
+      'basePath' => url('', array(
         'absolute' => TRUE 
       )) 
     ) 
@@ -201,7 +201,7 @@ function angularjs_library() {
 function angularjs_init_application($name, $base_href = NULL) {
   // If no value is entered use the current URL
   if (NULL == $base_href) {
-    $base_href = url($_GET ['q']) . '/';
+    $base_href = url($_GET['q']) . '/';
   }
   
   angularjs_set_app_name($name);
@@ -267,14 +267,14 @@ function angularjs_preprocess_html(&$vars) {
   $base_href = angularjs_get_base_href();
   
   if (FALSE === empty($app_name)) {
-    $vars ['attributes_array'] ['ng-app'] = $app_name;
-    $vars ['html_attributes_array'] ['ng-app'] = $app_name;
+    $vars['attributes_array']['ng-app'] = $app_name;
+    $vars['html_attributes_array']['ng-app'] = $app_name;
   }
   
   if (FALSE === empty($base_href)) {
-    drupal_add_html_head(array (
+    drupal_add_html_head(array(
       '#tag' => 'base',
-      '#attributes' => array (
+      '#attributes' => array(
         'href' => $base_href 
       ) 
     ), 'angularjs_base_href');
@@ -285,14 +285,14 @@ function angularjs_preprocess_html(&$vars) {
  * Implements hook_element_info().
  */
 function angularjs_element_info() {
-  $types ['ng_select'] = array (
+  $types['ng_select'] = array(
     '#input' => TRUE,
     '#multiple' => FALSE,
     '#theme' => 'ng_select',
-    '#theme_wrappers' => array (
+    '#theme_wrappers' => array(
       'form_element' 
     ),
-    '#process' => array (
+    '#process' => array(
       'form_process_select',
       'ajax_process_form',
       'angularjs_process_select' 
@@ -300,13 +300,11 @@ function angularjs_element_info() {
     '#ng_model' => '',
     // @todo: Add option to look at parents(s) for the controller definition.
     '#ng_controller' => '',
-    '#attached' => array (
-      'library' => array () 
+    '#attached' => array(
+      'library' => array() 
     // @todo: Check why this doesn't work.
     // array('angularjs', 'angularjs'),
-        )
-
-     
+        ) 
   );
   
   return $types;
@@ -316,19 +314,19 @@ function angularjs_element_info() {
  * Implements hook_theme().
  */
 function angularjs_theme() {
-  return array (
-    'ng_select' => array (
+  return array(
+    'ng_select' => array(
       'render element' => 'element' 
     ),
-    'ng_table' => array (
-      'variables' => array (
+    'ng_table' => array(
+      'variables' => array(
         'header' => NULL,
-        'attributes' => array (),
+        'attributes' => array(),
         'caption' => NULL,
         'sticky' => TRUE,
         'empty' => '',
         // Angular settings.
-        'row' => array (),
+        'row' => array(),
         'ng_model' => '',
         'ng_controller' => '',
         'ng_repeat' => '',
@@ -343,27 +341,27 @@ function angularjs_theme() {
  */
 function angularjs_process_select($element, $form_state) {
   // Pass the option to JS.
-  $options = array ();
+  $options = array();
   
-  if (TRUE === isset($element ['#options'])) {
-    foreach ( $element ['#options'] as $value => $name ) {
-      $options [] = array (
+  if (TRUE === isset($element['#options'])) {
+    foreach($element['#options'] as $value => $name) {
+      $options[] = array(
         'value' => $value,
         'name' => $name 
       );
     }
   }
   
-  if (TRUE === isset($element ['#ng_controller'])) {
-    $data ['angularjs'] [$element ['#ng_controller']] [$element ['#ng_model']] = array (
+  if (TRUE === isset($element['#ng_controller'])) {
+    $data['angularjs'][$element['#ng_controller']][$element['#ng_model']] = array(
       'options' => $options,
-      'required' => $element ['#required'],
-      'selected' => $element ['#default_value'],
+      'required' => $element['#required'],
+      'selected' => $element['#default_value'],
       '_type' => 'select',
-      '_name' => $element ['#name'] 
+      '_name' => $element['#name'] 
     );
     
-    $element ['#attached'] ['js'] [] = array (
+    $element['#attached']['js'][] = array(
       'type' => 'setting',
       'data' => $data 
     );
@@ -378,41 +376,41 @@ function angularjs_process_select($element, $form_state) {
  * @ingroup themeable
  */
 function theme_ng_select($variables) {
-  $element = $variables ['element'];
-  element_set_attributes($element, array (
+  $element = $variables['element'];
+  element_set_attributes($element, array(
     'id',
     'name',
     'size' 
   ));
-  _form_set_class($element, array (
+  _form_set_class($element, array(
     'form-select' 
   ));
   
-  return '<select' . drupal_attributes($element ['#attributes']) . ' ng-model="' . $element ['#ng_model'] . '.selected" ng-options="option.value as option.name for option in ' . $element ['#ng_model'] . '.options"></select> ';
+  return '<select' . drupal_attributes($element['#attributes']) . ' ng-model="' . $element['#ng_model'] . '.selected" ng-options="option.value as option.name for option in ' . $element['#ng_model'] . '.options"></select> ';
 }
 
 /**
  * Returns HTML for a table, using AngularJs.
  */
 function theme_ng_table($variables) {
-  $header = $variables ['header'];
-  $row = $variables ['row'];
-  $attributes = $variables ['attributes'];
-  $caption = $variables ['caption'];
-  $sticky = $variables ['sticky'];
-  $empty = $variables ['empty'];
+  $header = $variables['header'];
+  $row = $variables['row'];
+  $attributes = $variables['attributes'];
+  $caption = $variables['caption'];
+  $sticky = $variables['sticky'];
+  $empty = $variables['empty'];
   
-  $ng_controller = $variables ['ng_controller'];
-  $ng_model = $variables ['ng_model'];
-  $ng_repeat = ! empty($variables ['ng_repeat']) ? $variables ['ng_repeat'] : "item in $ng_model";
-  $ng_empty = ! empty($variables ['ng_empty']) ? $variables ['ng_empty'] : "!$ng_model.length";
+  $ng_controller = $variables['ng_controller'];
+  $ng_model = $variables['ng_model'];
+  $ng_repeat = ! empty($variables['ng_repeat']) ? $variables['ng_repeat'] : "item in $ng_model";
+  $ng_empty = ! empty($variables['ng_empty']) ? $variables['ng_empty'] : "!$ng_model.length";
   
   // Add sticky headers, if applicable.
   if (count($header) && $sticky) {
     drupal_add_js('misc/tableheader.js');
     // Add 'sticky-enabled' class to the table to identify it for JS.
     // This is needed to target tables constructed by this function.
-    $attributes ['class'] [] = 'sticky-enabled';
+    $attributes['class'][] = 'sticky-enabled';
   }
   
   $output = '<table' . drupal_attributes($attributes) . ">\n";
@@ -424,7 +422,7 @@ function theme_ng_table($variables) {
   // Add the 'empty' row message if available.
   if (empty($row) && $empty) {
     $header_count = 0;
-    foreach ( $header as $header_cell ) {
+    foreach($header as $header_cell) {
       if (is_array($header_cell)) {
         $header_count += 1;
       } else {
@@ -432,10 +430,10 @@ function theme_ng_table($variables) {
       }
     }
     // @todo: Fix.
-    $rows [] = array (
-      array (
+    $rows[] = array(
+      array(
         'data' => $empty,
-        'class' => array (
+        'class' => array(
           'empty',
           'message' 
         ) 
@@ -448,7 +446,7 @@ function theme_ng_table($variables) {
     // HTML requires that the thead tag has tr tags in it followed by tbody
     // tags. Using ternary operator to check and see if we have any rows.
     $output .= (count($row) ? ' <thead><tr>' : ' <tr>');
-    foreach ( $header as $cell ) {
+    foreach($header as $cell) {
       $output .= '<th>' . $cell . '</th>';
     }
     // Using ternary operator to close the tags based on whether or not there are rows
@@ -461,7 +459,7 @@ function theme_ng_table($variables) {
     
     // Build row
     $output .= ' <tr ng-repeat="' . $ng_repeat . '">';
-    foreach ( $row as $cell ) {
+    foreach($row as $cell) {
       $output .= '<td>' . $cell . '</td>';
     }
     $output .= " </tr>\n";
@@ -480,14 +478,14 @@ function theme_ng_table($variables) {
  * Returns the registered AngularJS modules
  *
  * @param string $type          
- * @param boolean $reset  
- * @param string $version        
+ * @param boolean $reset          
+ * @param string $version          
  * @return array
  */
 function angularjs_get_modules($type, $reset = FALSE, $version = NULL) {
   $name = 'angularjs_' . $type;
   
-  $modules = &drupal_static($name, array ());
+  $modules = &drupal_static($name, array());
   
   if (TRUE === empty($modules)) {
     $cached_modules = cache_get($name);
@@ -508,8 +506,8 @@ function angularjs_get_modules($type, $reset = FALSE, $version = NULL) {
 /**
  * Returns a list of AngularJS filters exposed by modules
  *
- * @param boolean $reset   
- * @param string $version       
+ * @param boolean $reset          
+ * @param string $version          
  * @return array
  */
 function angularjs_get_filters($reset = FALSE, $version = NULL) {
@@ -519,8 +517,8 @@ function angularjs_get_filters($reset = FALSE, $version = NULL) {
 /**
  * Returns a list of AngularJS directives exposed by modules
  *
- * @param boolean $reset 
- * @param string $version         
+ * @param boolean $reset          
+ * @param string $version          
  * @return array
  */
 function angularjs_get_directives($reset = FALSE, $version = NULL) {
@@ -530,8 +528,8 @@ function angularjs_get_directives($reset = FALSE, $version = NULL) {
 /**
  * Returns a list of AngularJS services exposed by modules
  *
- * @param boolean $reset 
- * @param string $version         
+ * @param boolean $reset          
+ * @param string $version          
  * @return array
  */
 function angularjs_get_services($reset = FALSE, $version = NULL) {
@@ -552,12 +550,12 @@ function angularjs_get_controllers($reset = FALSE, $version = NULL) {
 /**
  * Implements hook_angularjs_services
  *
- * @param string $version
+ * @param string $version          
  * @return array
  */
 function angularjs_angularjs_services($version = NULL) {
-  return array (
-    drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array () 
+  return array(
+    drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array() 
   );
 }
 
@@ -587,10 +585,10 @@ function angularjs_template_output($var) {
  * @return array
  */
 function angularjs_add_partial($name = NULL, $output = NULL) {
-  $partials = &drupal_static(__FUNCTION__, array ());
+  $partials = &drupal_static(__FUNCTION__, array());
   
   if (NULL != $name) {
-    $partials [$name] = $output;
+    $partials[$name] = $output;
   }
   
   return $partials;
@@ -608,24 +606,24 @@ function angularjs_page_alter(&$variables) {
   
   drupal_alter('angularjs_partials', $partials);
   
-  foreach ( $partials as $name => $output ) {
+  foreach($partials as $name => $output) {
     
     // If we have a render array render it
     if (TRUE === is_array($output)) {
       $output = render($output);
     }
     
-    $element = array (
+    $element = array(
       '#tag' => 'script',
       '#value' => $output,
-      '#attributes' => array (
+      '#attributes' => array(
         'type' => 'text/ng-template',
         'id' => $name 
       ) 
     );
     
-    $variables ['footer'] ['partial_' . $name] = array (
-      '#markup' => theme('html_tag', array (
+    $variables['footer']['partial_' . $name] = array(
+      '#markup' => theme('html_tag', array(
         'element' => $element 
       )) 
     );
