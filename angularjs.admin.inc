@@ -76,6 +76,8 @@ function angularjs_settings_form($form, &$form_state) {
 function angularjs_settings_form_validate(&$form, &$form_state) {
   // Filter out unused files
 	$form_state['values']['angularjs_files'] = array_filter(array_values($form_state['values']['angularjs_files']));
+	
+	cache_clear_all('angularjs_*', 'cache', TRUE);
 }
 
 /**

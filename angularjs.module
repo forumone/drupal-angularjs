@@ -157,12 +157,11 @@ function angularjs_library() {
   // Load module types exposed by modules
   foreach ( array (
     'controllers',
-    'resources',
     'filters',
     'directives',
     'services' 
   ) as $type ) {
-    foreach ( angularjs_get_modules($type) as $path => $options ) {
+    foreach ( angularjs_get_modules($type, false) as $path => $options ) {
       $js [$path] = $options;
     }
   }
@@ -302,11 +301,12 @@ function angularjs_element_info() {
     // @todo: Add option to look at parents(s) for the controller definition.
     '#ng_controller' => '',
     '#attached' => array (
-      'library' => array ()
-      // @todo: Check why this doesn't work.
-      // array('angularjs', 'angularjs'),
-       
-    ) 
+      'library' => array () 
+    // @todo: Check why this doesn't work.
+    // array('angularjs', 'angularjs'),
+        )
+
+     
   );
   
   return $types;
@@ -480,10 +480,11 @@ function theme_ng_table($variables) {
  * Returns the registered AngularJS modules
  *
  * @param string $type          
- * @param boolean $reset          
+ * @param boolean $reset  
+ * @param string $version        
  * @return array
  */
-function angularjs_get_modules($type, $reset = FALSE) {
+function angularjs_get_modules($type, $reset = FALSE, $version = NULL) {
   $name = 'angularjs_' . $type;
   
   $modules = &drupal_static($name, array ());
@@ -492,8 +493,8 @@ function angularjs_get_modules($type, $reset = FALSE) {
     $cached_modules = cache_get($name);
     
     if (FALSE === isset($cached_modules->data) || TRUE == $reset) {
-      $modules = module_invoke_all($name);
-      drupal_alter($name, $modules);
+      $modules = module_invoke_all($name, $version);
+      drupal_alter($name, $modules, $version);
       
       cache_set($name, $modules);
     } else {
@@ -505,61 +506,56 @@ function angularjs_get_modules($type, $reset = FALSE) {
 }
 
 /**
- * Returns a list of AngularJS resources exposed by modules
- *
- * @param boolean $reset          
- * @return array
- */
-function angularjs_get_resources($reset = FALSE) {
-  return angularjs_get_modules('resources', $reset);
-}
-
-/**
  * Returns a list of AngularJS filters exposed by modules
  *
- * @param boolean $reset          
+ * @param boolean $reset   
+ * @param string $version       
  * @return array
  */
-function angularjs_get_filters($reset = FALSE) {
-  return angularjs_get_modules('filters', $reset);
+function angularjs_get_filters($reset = FALSE, $version = NULL) {
+  return angularjs_get_modules('filters', $reset, $version);
 }
 
 /**
  * Returns a list of AngularJS directives exposed by modules
  *
- * @param boolean $reset          
+ * @param boolean $reset 
+ * @param string $version         
  * @return array
  */
-function angularjs_get_directives($reset = FALSE) {
-  return angularjs_get_modules('directives', $reset);
+function angularjs_get_directives($reset = FALSE, $version = NULL) {
+  return angularjs_get_modules('directives', $reset, $version);
 }
 
 /**
  * Returns a list of AngularJS services exposed by modules
  *
- * @param boolean $reset          
+ * @param boolean $reset 
+ * @param string $version         
  * @return array
  */
-function angularjs_get_services($reset = FALSE) {
-  return angularjs_get_modules('services', $reset);
+function angularjs_get_services($reset = FALSE, $version = NULL) {
+  return angularjs_get_modules('services', $reset, $version);
 }
 
 /**
  * Returns a list of AngularJS controllers exposed by modules
  *
  * @param boolean $reset          
+ * @param string $version          
  * @return array
  */
-function angularjs_get_controllers($reset = FALSE) {
-  return angularjs_get_modules('controllers', $reset);
+function angularjs_get_controllers($reset = FALSE, $version = NULL) {
+  return angularjs_get_modules('controllers', $reset, $version);
 }
 
 /**
- * Implements hook_angularjs_resources
+ * Implements hook_angularjs_services
  *
+ * @param string $version
  * @return array
  */
-function angularjs_angularjs_resources() {
+function angularjs_angularjs_services($version = NULL) {
   return array (
     drupal_get_path('module', 'angularjs') . '/js/angular_resource.js' => array () 
   );
