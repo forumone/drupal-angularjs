@@ -2,9 +2,8 @@ angular.module('angularMapFilters', [])
   .filter('filterLayer', function() {
     return function(feature, facet_values) {
       var visible = true;
-      
       angular.forEach(facet_values, function(value, key) {
-        if (true === angular.isDefined(feature.properties[key + '_rendered']) && value != feature.properties[key + '_rendered']) {
+        if (true === angular.isDefined(feature.properties[key]) && value != feature.properties[key]) {
           visible = false;
         } 
       });

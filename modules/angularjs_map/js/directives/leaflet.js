@@ -126,12 +126,12 @@ angular.module('angularMap', [])
         }
         
         $scope.createLayer = function() {
-          $http({ method: 'GET', url: $scope.layerUrl})
+          $http({ method: 'GET', url: $scope.layerUrl, cache: true})
             .success(function(data, status, headers, config) {
               $scope.data = data;
               
               $scope.markers = new L.MarkerClusterGroup();
-              
+
               $scope.layer = L.geoJson($scope.data, {
                 onEachFeature: function (feature, layer) {
                   layer.bindPopup(feature.properties.name);

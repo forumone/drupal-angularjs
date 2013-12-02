@@ -66,3 +66,10 @@ features_exclude[field][node-earthquake-field_cdi] = node-earthquake-field_cdi
 features_exclude[field][node-earthquake-field_epicenter_distance] = node-earthquake-field_epicenter_distance
 features_exclude[field][node-earthquake-field_location] = node-earthquake-field_location
 project path = sites/all/modules/custom/angularjs/modules
+
+; Information added by drupal.org packaging script on 2013-10-26
+version = "7.x-1.2"
+core = "7.x"
+project = "angularjs"
+datestamp = "1382764231"
+
