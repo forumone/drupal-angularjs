@@ -99,7 +99,7 @@ function angularjs_version_files($version = NULL) {
     'angular-sanitize' 
   );
   
-  $files['1.2.0-rc.3'] = array(
+  $files['1.2.0'] = array(
     'angular-animate',
     'angular-cookies',
     'angular-loader',
@@ -109,7 +109,19 @@ function angularjs_version_files($version = NULL) {
     'angular-sanitize',
     'angular-touch' 
   );
-  
+
+  $files['1.2.5'] = array(
+    'angular-animate',
+    'angular-cookies',
+    'angular-loader',
+    'angular-mocks',
+    'angular-resource',
+    'angular-route',
+    'angular-sanitize',
+    'angular-scenario',
+    'angular-touch'
+  );
+
   return (NULL != $version) ? $files[$version] : $files;
 }
 
