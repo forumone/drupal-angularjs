@@ -10,12 +10,7 @@ function angularjs_settings_form($form, &$form_state) {
   $form['angularjs_version'] = array(
     '#type' => 'select',
     '#title' => t('AngularJS version'),
-    '#options' => array(
-      '1.0.8' => '1.0.8',
-      '1.1.5' => '1.1.5',
-      '1.2.0' => '1.2.0',
-      '1.2.5' => '1.2.5',
-    ),
+    '#options' => angularjs_version_options(),
     '#default_value' => variable_get('angularjs_version', ANGULARJS_DEFAULT_VERSION),
     '#description' => t("Select which version of AngularJS that's used on the site"),
     '#ajax' => array(
@@ -66,6 +61,17 @@ function angularjs_settings_form($form, &$form_state) {
   );
   
   return system_settings_form($form);
+}
+
+/**
+ * Returns a list of AngularJS versions
+ * 
+ * @return array
+ */
+function angularjs_version_options() {
+  $versions = angularjs_version_files();
+  $options = drupal_map_assoc(array_keys($versions));
+  return $options;
 }
 
 /**
