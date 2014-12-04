@@ -121,6 +121,20 @@ function angularjs_version_files($version = NULL) {
     'angular-scenario',
     'angular-touch'
   );
+  
+  $files['1.3.4'] = array(
+    'angular-animate',
+    'angular-aria',
+    'angular-cookies',
+    'angular-loader',
+    'angular-messages',
+    'angular-mocks',
+    'angular-resource',
+    'angular-route',
+    'angular-sanitize',
+    'angular-scenario',
+    'angular-touch'
+  );
 
   return (NULL != $version) ? $files[$version] : $files;
 }
