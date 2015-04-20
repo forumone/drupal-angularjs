@@ -64,17 +64,6 @@ function angularjs_settings_form($form, &$form_state) {
 }
 
 /**
- * Returns a list of AngularJS versions
- * 
- * @return array
- */
-function angularjs_version_options() {
-  $versions = angularjs_version_files();
-  $options = drupal_map_assoc(array_keys($versions));
-  return $options;
-}
-
-/**
  * Form validator for AngularJS configuration form
  *
  * @param array $form          

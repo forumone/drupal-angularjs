@@ -72,71 +72,68 @@ function angularjs_menu() {
 }
 
 /**
+ * Returns a list of all current AngularJS versions
+ * 
+ * @param boolean $reset  Whether to reset the cache
+ * @return array
+ */
+function angularjs_version_options($reset = FALSE) {
+  $cid = 'angularjs:versions';
+
+  if (!$reset && ($cache = cache_get($cid)) && !empty($cache->data)) {
+    $data = $cache->data;
+  }
+  else {
+  	$result = drupal_http_request('https://code.angularjs.org/');
+  	$re = "/href=\"([0-9][0-9\\.a-z\\-]+)\\/\"/";
+  	if (TRUE === isset($result->data)) {
+      preg_match_all($re, $result->data, $matches);
+      if ($matches && 2 == sizeof($matches)) {
+        $data = $matches[1];
+        cache_set($cid, $data);
+      }
+  	}
+  }
+  
+  return drupal_map_assoc($data);
+}
+
+/**
  * Provides a list of files that are part of the selected version of AngularJS
  *
  * @param string $version          
  * @return array
  */
-function angularjs_version_files($version = NULL) {
-  $files = array();
+function angularjs_version_files($version = NULL, $reset = FALSE) {
+  $data = array();
   
-  $files['1.0.8'] = array(
-    'angular-bootstrap-prettify',
-    'angular-bootstrap',
-    'angular-cookies',
-    'angular-loader',
-    'angular-mocks',
-    'angular-resource',
-    'angular-sanitize' 
-  );
-  
-  $files['1.1.5'] = array(
-    'angular-cookies',
-    'angular-loader',
-    'angular-mobile',
-    'angular-mocks',
-    'angular-resource',
-    'angular-sanitize' 
-  );
-  
-  $files['1.2.0'] = array(
-    'angular-animate',
-    'angular-cookies',
-    'angular-loader',
-    'angular-mocks',
-    'angular-resource',
-    'angular-route',
-    'angular-sanitize',
-    'angular-touch' 
-  );
+  if ($version) {
+    $cid = 'angularjs:versions:' . $version;
+    if (!$reset && ($cache = cache_get($cid)) && !empty($cache->data)) {
+      $data = $cache->data;
+    }
+    else {
+      $result = drupal_http_request('https://code.angularjs.org/' . $version);
+      if (FALSE === isset($result->error)) {
+      	$re = "/href=\"([a-z][a-z\\-\\.0-9]+)(?<!min).js\"/"; 
+      	preg_match_all($re, $result->data, $matches);
+        if ($matches && 2 == sizeof($matches)) {
+    	  $data = $matches[1];
 
-  $files['1.2.5'] = array(
-    'angular-animate',
-    'angular-cookies',
-    'angular-loader',
-    'angular-mocks',
-    'angular-resource',
-    'angular-route',
-    'angular-sanitize',
-    'angular-scenario',
-    'angular-touch'
-  );
+    	  // Make sure we don't list the basic library
+    	  $angular_position = array_search('angular', $data);
+    	  if (FALSE !== $angular_position) {
+    	  	unset($data[$angular_position]);
+    	  }
+    	  
+    	  cache_set($cid, $data);
+    	}
+      }
+    }
+  }
   
-  $files['1.3.4'] = array(
-    'angular-animate',
-    'angular-aria',
-    'angular-cookies',
-    'angular-loader',
-    'angular-messages',
-    'angular-mocks',
-    'angular-resource',
-    'angular-route',
-    'angular-sanitize',
-    'angular-scenario',
-    'angular-touch'
-  );
-
-  return (NULL != $version) ? $files[$version] : $files;
+  return $data;
+  
 }
 
 /**
