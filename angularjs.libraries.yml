@@ -1,0 +1,178 @@
+angular:
+  remote: https://github.com/angular/angular.js
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/angular.js/blob/v1.5.0/LICENSE
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js: {}
+  dependencies:
+    - core/jquery
+
+angular-animate:
+  remote: https://github.com/angular/bower-angular-animate
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-animate/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-animate.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-aria:
+  remote: https://github.com/angular/bower-angular-aria
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-aria/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-aria.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-cookies:
+  remote: https://github.com/angular/bower-angular-cookies
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-cookies/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-cookies.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-csp:
+  remote: https://cdnjs.com/libraries/angular.js
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/angular.js/blob/v1.5.0/LICENSE
+    gpl-compatible: true
+  css:
+    component:
+      //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-csp.css: {}
+
+angular-loader:
+  remote: https://github.com/angular/bower-angular-loader
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-loader/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-loader.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-message-format:
+  remote: https://github.com/angular/bower-angular-message-format
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-message-format/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-message-format.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-messages:
+  remote: https://github.com/angular/bower-angular-messages
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-messages/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-messages.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-mocks:
+  remote: https://github.com/angular/bower-angular-mocks
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-mocks/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-mocks.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-resource:
+  remote: https://github.com/angular/bower-angular-resource
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-resource/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-resource.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-route:
+  remote: https://github.com/angular/bower-angular-route
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-route/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-route.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-sanitize:
+  remote: https://github.com/angular/bower-angular-sanitize
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-sanitize/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-sanitize.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-scenario:
+  remote: https://github.com/angular/bower-angular-scenario
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-scenario/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-scenario.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
+
+angular-touch:
+  remote: https://github.com/angular/bower-angular-touch
+  version: 1.5.0
+  license:
+    name: MIT
+    url: https://github.com/angular/bower-angular-touch/blob/v1.5.0/README.md#license
+    gpl-compatible: true
+  js:
+    //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-touch.min.js: {}
+  dependencies:
+    - core/jquery
+    - angularjs/angular
