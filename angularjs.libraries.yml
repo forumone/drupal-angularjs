@@ -20,7 +20,6 @@ angular-animate:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-animate.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-aria:
@@ -33,7 +32,6 @@ angular-aria:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-aria.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-cookies:
@@ -46,7 +44,6 @@ angular-cookies:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-cookies.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-csp:
@@ -70,7 +67,6 @@ angular-loader:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-loader.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-message-format:
@@ -83,7 +79,6 @@ angular-message-format:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-message-format.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-messages:
@@ -96,7 +91,6 @@ angular-messages:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-messages.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-mocks:
@@ -109,7 +103,6 @@ angular-mocks:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-mocks.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-resource:
@@ -122,7 +115,6 @@ angular-resource:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-resource.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-route:
@@ -135,7 +127,6 @@ angular-route:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-route.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-sanitize:
@@ -148,7 +139,6 @@ angular-sanitize:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-sanitize.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-scenario:
@@ -161,7 +151,6 @@ angular-scenario:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-scenario.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
 
 angular-touch:
@@ -174,5 +163,4 @@ angular-touch:
   js:
     //cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular-touch.min.js: {}
   dependencies:
-    - core/jquery
     - angularjs/angular
